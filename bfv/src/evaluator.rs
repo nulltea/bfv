@@ -388,7 +388,7 @@ impl Evaluator {
         pt: &Plaintext,
         rng: &mut R,
     ) -> Ciphertext {
-        sk.encrypt(&self.params, pt, rng)
+        sk.encrypt(&self.params, pt, rng).0
     }
 
     pub fn decrypt(&self, sk: &SecretKey, ct: &Ciphertext) -> Plaintext {
