@@ -1,10 +1,9 @@
-use crate::relinearization_key::RelinearizationKey;
 use crate::{BfvParameters, Ciphertext, EvaluationKey, PolyType};
-use crate::{Encoding, GaloisKey, Plaintext, SecretKey};
+use crate::{Encoding, Plaintext, SecretKey};
 use crate::{Poly, Representation};
 use itertools::{izip, Itertools};
-use num_bigint::{BigUint, RandBigInt};
-use rand::{thread_rng, CryptoRng, Rng, RngCore};
+use num_bigint::RandBigInt;
+use rand::{thread_rng, CryptoRng, RngCore};
 
 pub struct Evaluator {
     pub(crate) params: BfvParameters,
@@ -388,7 +387,7 @@ impl Evaluator {
         pt: &Plaintext,
         rng: &mut R,
     ) -> Ciphertext {
-        sk.encrypt(&self.params, pt, rng)
+        sk.encrypt(&self.params, pt, rng).0
     }
 
     pub fn decrypt(&self, sk: &SecretKey, ct: &Ciphertext) -> Plaintext {

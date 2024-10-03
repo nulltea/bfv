@@ -1,5 +1,5 @@
 use crate::{rot_to_galois_element, BfvParameters, GaloisKey, RelinearizationKey, SecretKey};
-use itertools::{izip, Itertools};
+use itertools::izip;
 use rand::{CryptoRng, RngCore};
 use std::collections::HashMap;
 

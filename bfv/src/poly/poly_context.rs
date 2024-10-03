@@ -5,8 +5,8 @@ use crate::{
     Representation, Substitution,
 };
 use crypto_bigint::U192;
-use itertools::{izip, Itertools};
-use ndarray::{azip, s, Array2, ArrayView2, Axis, IntoNdProducer};
+use itertools::izip;
+use ndarray::{s, Array2, ArrayView2, Axis, IntoNdProducer};
 use num_bigint::BigUint;
 use num_traits::{identities::One, ToPrimitive, Zero};
 use rand::{CryptoRng, RngCore, SeedableRng};

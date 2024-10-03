@@ -1,7 +1,6 @@
 use std::mem::MaybeUninit;
 
 use itertools::{izip, Itertools};
-use num_bigint::U64Digits;
 use num_bigint_dig::{prime::probably_prime, BigUint};
 use num_traits::{One, ToPrimitive};
 use rand::{distributions::Uniform, CryptoRng, Rng, RngCore};
@@ -173,8 +172,8 @@ impl Modulus {
         // beta = -2
 
         let mut q = ab >> (n - 2);
-        q *= (self.mu as u128);
-        q >>= (alpha + 2);
+        q *= self.mu as u128;
+        q >>= alpha + 2;
 
         ab -= q * (self.modulus as u128);
         let mut ab = ab as u64;
@@ -213,8 +212,8 @@ impl Modulus {
 
         let mut a = a as u128;
         let mut q = a >> (n - 2);
-        q *= (self.mu as u128);
-        q >>= (alpha + 2);
+        q *= self.mu as u128;
+        q >>= alpha + 2;
 
         a -= q * (self.modulus as u128);
         let mut a = a as u64;
@@ -394,6 +393,15 @@ impl Modulus {
             .for_each(|(va, vb, vb_shoup)| *va = self.mul_mod_shoup(*va, *vb, *vb_shoup));
     }
 
+    /// Modular scalar multiplication of vectors in place in constant time.
+    ///
+    /// Aborts if any of the values in a is >= p in debug mode.
+    pub fn scalar_mul_vec(&self, a: &mut [u64], b: u64) {
+        let b_shoup = self.compute_shoup(b);
+        a.iter_mut()
+            .for_each(|ai| *ai = self.mul_mod_shoup(*ai, b, b_shoup));
+    }
+
     /// Barrett modulus multiplication of scalar with vector a
     ///
     /// Assumes scalar and all elements in a are smaller than modulus
@@ -512,6 +520,53 @@ impl Modulus {
                 );
             }
         }
+    }
+
+    /// Center a value modulo p as i64 in variable time.
+    /// TODO: To test and to make constant time?
+    ///
+    /// # Safety
+    /// This function is not constant time and its timing may reveal information
+    /// about the value being centered.
+    const unsafe fn center_vt(&self, a: u64) -> i64 {
+        debug_assert!(a < self.modulus);
+
+        if a >= self.modulus >> 1 {
+            (a as i64) - (self.modulus as i64)
+        } else {
+            a as i64
+        }
+    }
+
+    /// Centers a `u64` value into the range `[-self.p/2, self.p/2)`
+    /// according to the modulus `self.p`, in constant time.
+    ///
+    /// # Arguments
+    ///
+    /// * `a` - The `u64` value to be centered.
+    ///
+    /// # Returns
+    ///
+    /// An `i64` value centered around zero with respect to the modulus `self.p`.
+    pub fn center(&self, a: u64) -> i64 {
+        assert!(a < self.modulus, "Value must be less than modulus.");
+
+        let half_p = self.modulus >> 1; // Equivalent to p / 2
+
+        // Compute centered value using bitwise operations
+        let offset = (a >= half_p) as i64; // This will be 1 if true, 0 if false
+        let centered = a as i64 - (offset * self.modulus as i64);
+
+        centered
+    }
+
+    /// Center a vector in variable time.
+    ///
+    /// # Safety
+    /// This function is not constant time and its timing may reveal information
+    /// about the values being centered.
+    pub unsafe fn center_vec_vt(&self, a: &[u64]) -> Vec<i64> {
+        a.iter().map(|ai| self.center_vt(*ai)).collect_vec()
     }
 }
 

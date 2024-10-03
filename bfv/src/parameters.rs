@@ -131,7 +131,7 @@ where
         let f = (2.0_f64).pow(60);
         dbg!(((delta * bound_error * f * 8.0) as f64 / 2.0).log2());
 
-        (bound_error * (1.0 + 2.0 * delta * bound_key))
+        bound_error * (1.0 + 2.0 * delta * bound_key)
     }
 
     /// Returns noise in bits from BV key switching operation
@@ -552,7 +552,7 @@ where
             pos &= m - 1;
         }
 
-        dbg!(&matrix_reps_index_map);
+        // dbg!(&matrix_reps_index_map);
 
         let plaintext_modulus_op = Modulus::new(plaintext_modulus);
         let plaintext_ntt_op = T::new(degree, plaintext_modulus);
@@ -939,13 +939,13 @@ impl HybridKeySwitchingParameters {
         // Precompute for P to Q (used for approx_switch_crt_basis in approx_mod_down)
         let mut p_hat_inv_modp = vec![];
         let mut p_hat_modq = vec![];
-        specialp_ctx.iter_moduli_ops().for_each(|(modpi)| {
+        specialp_ctx.iter_moduli_ops().for_each(|modpi| {
             let pi = modpi.modulus();
             let pi_hat = &p / pi;
             p_hat_inv_modp.push(mod_inverse_biguint_u64(&pi_hat, pi).to_u64().unwrap());
         });
         ksk_ctx.iter_moduli_ops().for_each(|modqj| {
-            specialp_ctx.iter_moduli_ops().for_each(|(modpi)| {
+            specialp_ctx.iter_moduli_ops().for_each(|modpi| {
                 p_hat_modq.push(((&p / modpi.modulus()) % modqj.modulus()).to_u64().unwrap());
             });
         });

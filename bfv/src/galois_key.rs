@@ -1,5 +1,5 @@
 use crate::{
-    BfvParameters, Ciphertext, HybridKeySwitchingKey, Modulus, Poly, PolyContext, PolyType,
+    BfvParameters, Ciphertext, HybridKeySwitchingKey, PolyType,
     Representation, SecretKey, Substitution,
 };
 use rand::{CryptoRng, RngCore};

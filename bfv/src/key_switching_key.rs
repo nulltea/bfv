@@ -1,16 +1,14 @@
-use crate::modulus::Modulus;
-use crate::{mod_inverse_biguint, mod_inverse_biguint_u64};
+use crate::mod_inverse_biguint_u64;
 use crate::{
     secret_key::SecretKey, HybridKeySwitchingParameters, Poly, PolyContext, Representation,
 };
 use crypto_bigint::rand_core::CryptoRngCore;
 use itertools::{izip, Itertools};
-use ndarray::{azip, s, Array1, Array2, Array3, Axis, IntoNdProducer};
-use num_bigint::{BigUint, ToBigInt};
-use num_traits::{FromPrimitive, One, ToPrimitive};
+use ndarray::{s, IntoNdProducer};
+use num_bigint::BigUint;
+use num_traits::ToPrimitive;
 use rand::{CryptoRng, SeedableRng};
 use rand_chacha::ChaCha8Rng;
-use std::default;
 use traits::Ntt;
 struct BVKeySwitchingKey {
     pub(crate) c0s: Box<[Poly]>,
@@ -78,7 +76,7 @@ impl BVKeySwitchingKey {
         ksk_ctx: &PolyContext<'_>,
         seed: <ChaCha8Rng as SeedableRng>::Seed,
     ) -> Vec<Poly> {
-        let mut rng = ChaCha8Rng::from_seed(seed);
+        let rng = ChaCha8Rng::from_seed(seed);
         (0..ksk_ctx.moduli_count)
             .into_iter()
             .map(|_| {
@@ -202,9 +200,9 @@ impl HybridKeySwitchingKey {
                         .slice(s![(i * alpha)..((i + 1) * alpha), ..])
                 }
             };
-            let mut parts_count = qj_coefficients.shape()[0];
+            let parts_count = qj_coefficients.shape()[0];
 
-            let mut p_whole_coefficients = PolyContext::approx_switch_crt_basis(
+            let p_whole_coefficients = PolyContext::approx_switch_crt_basis(
                 &qj_coefficients,
                 &ksk_params.qj_moduli_ops_parts[i],
                 qp_ctx.degree,
@@ -380,7 +378,7 @@ impl HybridKeySwitchingKey {
                     c1.coefficients.outer_iter().skip(to_skip),
                     e.coefficients.outer_iter().skip(to_skip),
                 )
-                .for_each(|((modpi, nttpi, mut c0pi, c1pi, epi))| {
+                .for_each(|(modpi, nttpi, mut c0pi, c1pi, epi)| {
                     c0pi.as_slice_mut()
                         .unwrap()
                         .copy_from_slice(epi.as_slice().unwrap());

@@ -167,7 +167,7 @@ pub struct CollectiveRlkAggTrimmedShare1(pub(crate) Vec<Poly>);
 pub struct CollectiveRlkGenerator();
 
 impl CollectiveRlkAggShare1 {
-    pub fn trim(mut self) -> CollectiveRlkAggTrimmedShare1 {
+    pub fn trim(self) -> CollectiveRlkAggTrimmedShare1 {
         let h1 = self.0 .1;
         CollectiveRlkAggTrimmedShare1(h1)
     }

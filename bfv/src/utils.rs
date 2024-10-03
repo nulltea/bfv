@@ -178,7 +178,7 @@ pub fn convert_from_bytes(bytes: &[u8], modulus: u64) -> Vec<u64> {
             let mut b = bytes[byte_index] as u64;
 
             // extract left over bits and set them in their position in current value
-            curr_value |= ((b & ((1 << left_over_bits) - 1)) << curr_value_fill);
+            curr_value |= (b & ((1 << left_over_bits) - 1)) << curr_value_fill;
             // curr_val is filled
             values.push(curr_value);
             value_index += 1;
@@ -199,7 +199,7 @@ pub fn convert_from_bytes(bytes: &[u8], modulus: u64) -> Vec<u64> {
                 break;
             }
         } else {
-            curr_value |= ((bytes[byte_index] as u64) << curr_value_fill);
+            curr_value |= (bytes[byte_index] as u64) << curr_value_fill;
             curr_value_fill += 8;
         }
 
